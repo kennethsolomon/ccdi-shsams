@@ -1,0 +1,2 @@
+echo 
+			nl2br("<p><font size='24' color='blue'> Fullname : ".$name."\r\n Time     : ".$timein."</font></p>");
