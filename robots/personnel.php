@@ -20,7 +20,7 @@ else{
 }
 function filterTbl($qry)
 {
-	$con = mysqli_connect("localhost", "root", "", "amsdb");
+	$con = mysqli_connect("localhost", "kenneub1_amsdb", "kenneub1_amsdb_123", "kenneub1_amsdb");
 	$fltr_res = mysqli_query($con, $qry);
 	return $fltr_res;
 }
