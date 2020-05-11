@@ -1,4 +1,10 @@
-
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 <html lang="en">
 
 <head>
@@ -27,6 +33,10 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+     <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet" />
     <script src="../style/js/jquery.js"></script>
   <script type='text/javascript'>
 
@@ -40,6 +50,16 @@
  }
  reader.readAsDataURL(event.target.files[0]);
 }
+
+
+function isNumberKey(evt)
+      {
+         var charCode = (evt.which) ? evt.which : event.keyCode
+         if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+ 
+         return true;
+      }
   </script>
    <style>
 {
@@ -79,7 +99,7 @@ ob_start();
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+            <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -91,7 +111,7 @@ ob_start();
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -111,22 +131,15 @@ ob_start();
                       </a>
 
           </li>
-		  <li>
-            <a class="" href="faculty.php">
+		    <li >
+            <a class="" href="personnel.php">
                           <i class=""></i>
-                          <span>Faculty</span>
+                          <span>Personnel</span>
 
                       </a>
 
           </li>
-		  <li>
-            <a class="" href="fclass.php">
-                          <i class=""></i>
-                          <span>Class</span>
-
-                      </a>
-
-          </li>
+		  
           <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
@@ -135,10 +148,18 @@ ob_start();
                       </a>
 
           </li>
+         <li class="">
+            <a class="" href="announce.php">
+                          <i class=""></i>
+                          <span>Announcement</span>
+
+                      </a>
+
+          </li>
           <li>
             <a class="" href="account.php">
                           <i class=""></i>
-                          <span>My Account</span>
+                          <span>Account</span>
 
                       </a>
 
@@ -163,12 +184,8 @@ ob_start();
           <div class="col-lg-12">
 		  <form method="post" action="" enctype="multipart/form-data">
              <section class="panel">
-              <header class="panel-heading">
-                <center>
-                <p><h3>UPDATE STUDENT DETAILS</h3></p></center>
-				
-				
-              </header>
+                			 <div class="panel panel-info">
+                <div class="panel-heading">Student Details</div>
 				<?php
 				
 				$id = $_GET['id'];
@@ -206,9 +223,140 @@ ob_start();
 						  <div class="column">
 								PERSONAL INFORMATION <br><br>
 								Identification Number:
-								<input type="text" name="idnum" class="form-control" value="'.$idnum.'" >
+								<input readonly type="text" name="idnum" class="form-control" onkeypress="return isNumberKey(event)" value="'.$idnum.'" >
 								Card Number:
-								<input type="text" name="cardnum" class="form-control"  value="'.$cardnum.'">
+								<input type="text" name="cardnum" id="scanInput" class="form-control" onkeypress="return isNumberKey(event)" value="'.$cardnum.'">
+								<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+								<script src="../style/js/jquery-3.3.1.min.js"></script>
+
+									<script>
+
+									var inputStart, inputStop, firstKey, lastKey, timing, userFinishedEntering;
+									var minChars = 3;
+
+									// handle a key value being entered by either keyboard or scanner
+									$("#scanInput").keypress(function (e) {
+										// restart the timer
+										if (timing) {
+											clearTimeout(timing);
+										}
+										
+										// handle the key event
+										if (e.which == 13) {
+											// Enter key was entered
+											
+										
+											e.preventDefault();
+											
+											// has the user finished entering manually?
+											if ($("#scanInput").val().length >= minChars){
+												userFinishedEntering = true; // incase the user pressed the enter key
+												inputComplete();
+											}
+										}
+										else {
+											// some other key value was entered
+											
+											// could be the last character
+											inputStop = performance.now();
+											lastKey = e.which;
+											
+										
+											userFinishedEntering = false;
+											
+											// is this the first character?
+											if (!inputStart) {
+												firstKey = e.which;
+												inputStart = inputStop;
+												
+												// watch for a loss of focus
+												$("body").on("blur", "#scanInput", inputBlur);
+											}
+											
+											// start the timer again
+											timing = setTimeout(inputTimeoutHandler, 500);
+										}
+									});
+
+									// Assume that a loss of focus means the value has finished being entered
+									function inputBlur(){
+										clearTimeout(timing);
+										if ($("#scanInput").val().length >= minChars){
+											userFinishedEntering = true;
+											inputComplete();
+										}
+									};
+
+
+									// reset the page
+									$("#reset").click(function (e) {
+										e.preventDefault();
+										resetValues();
+									});
+
+									function resetValues() {
+										// clear the variables
+										inputStart = null;
+										inputStop = null;
+										firstKey = null;
+										lastKey = null;
+										// clear the results
+										inputComplete();
+									}
+
+									// Assume that it is from the scanner if it was entered really fast
+									function isScannerInput() {
+										return (((inputStop - inputStart) / $("#scanInput").val().length) < 15);
+									}
+
+									// Determine if the user is just typing slowly
+									function isUserFinishedEntering(){
+										return !isScannerInput() && userFinishedEntering;
+									}
+
+									function inputTimeoutHandler(){
+										// stop listening for a timer event
+										clearTimeout(timing);
+										
+										if (!isUserFinishedEntering() || $("#scanInput").val().length < 3) {
+											// keep waiting for input
+											return;
+										}
+										else{
+											reportValues();
+										}
+									}
+
+									// here we decide what to do now that we know a value has been completely entered
+									function inputComplete(){
+										// stop listening for the input to lose focus
+										$("body").off("blur", "#scanInput", inputBlur);
+										// report the results
+										reportValues();
+									}
+
+									function reportValues() {
+										// update the metrics
+									   
+										if (!inputStart) {
+											// clear the results
+											$("#resultsList").html("");
+											$("#scanInput").focus().select();
+										} else {
+											
+											
+											
+											
+											$("#scanInput").focus().select();
+											inputStart = null;
+										}
+									}
+
+									$("#cc").focus();
+									</script>
+								
+								
+								
 								Last name:
 								<input type="text" name="lname" class="form-control" value="'.$lname.'" >
 								First name:
@@ -218,19 +366,39 @@ ob_start();
 								Address:									   							
 								<input type="text" name="add" class="form-control" value="'.$address.'"> 
 								Birthday
-								<input type="text" name="bday" class="form-control" value="'.$bday.'" >
+								<script src="bootstrap-datepicker.js"></script>    
+								<input  id="dp1" type="text" name="bday" class="form-control" value="'.$bday.'" >
+								                    
+								
 								Gender
-								<input type="text" name="gender" class="form-control" value="'.$gender.'"> 
+							
+								<select name="gender" class="form-control">
+										<option value="'.$gender.'">'.$gender.'</option>
+										<option value="Female">Female</option>
+										<option value="Male">Male</option>
+								</select>
 								
 												
 						  </div>
 						  <div class="column">
 						  COURSE DETAILS<br>
 								<br>Track/Strand
-								<input type="text" name="trck" class="form-control" value="'.$tcstr.'">
+							
+									<select name="trck" class="form-control">
+										<option value="'.$tcstr.'">'.$tcstr.'</option>
+										<option value="ABM">ABM</option>
+										<option value="GAS">GAS</option>
+										<option value="STEM">STEM</option>
+										<option value="TVL-Animation">TVL-Animation</option>
+										<option value="TVL-ICT">TVL-ICT</option>
+								</select>
+								
+								
+								
+								
 								Year Level
 								<select name="yrlv" class="form-control">
-									<option value="'.$yrlvl.'">'.$yrlvl.'<option>
+									<option value="'.$yrlvl.'">'.$yrlvl.'</option>
 										<option value=11>11</option>
 										<option value=12>12</option>
 								</select>
@@ -241,10 +409,10 @@ ob_start();
 								<br> Contact Person
 								<input type="text" name="conper" class="form-control" value="'.$conper.'"> 
 								Contact Number
-								<input type="text" name="connum" class="form-control" value="'.$connum.'"> 
+								<input type="text" name="connum" class="form-control" onkeypress="return isNumberKey(event)" value="'.$connum.'"> 
 								<br>
-								<br>
-								<button name="update" type="submit" class="btn btn-success  btn-lg">Save Changes</button>
+								
+								<button name="update" type="submit" class="btn btn-success  btn-sm">Save Changes</button>
 								
 							
 						  </div>
@@ -358,6 +526,7 @@ ob_start();
           }
         });
       });
+	    $('#dp1').datepicker();
     </script>
 
 </body>
@@ -389,12 +558,11 @@ if (isset($_POST['update']))
 			if($con->query($sql)){
 			
 			
-			header("location:request.php");
-			echo "<script>alert('Succesfully save!')</script>";
+			header("Location:request.php?statu=Changes is done successfully!&err=success");
 			}
 			else
 			{
-				echo "<script>alert('Cannot save. Please recheck the data file!')</script>";
+				header("Location:request.php?statu=Unable to save changes!&err=error");
 				
 			}
 		}
@@ -402,12 +570,11 @@ if (isset($_POST['update']))
 			$sql = "update per_files set identification_number ='$sc_id', card_number='$cnum', trck_str = '$tr',year_level='$yr', section='$se',last_name = '$lname', first_name = '$fname', middle_name = '$mname',  address = '$add', birthday = '$bday', contact_person = '$conper', contact_number='$connum', gender = '$gender' where identification_number = '$idnum'";
 			if($con->query($sql)){
 			
-			echo "<script>alert('Succesfully save!')</script>";
-			header("location:request.php");
+			header("Location:request.php?statu=Changes is done successfully!&err=success");
 			}
 			else
 			{
-				echo "<script>alert('Cannot save. Please recheck your filled data!')</script>";
+				header("Location:request.php?statu=Unable to save changes!&err=error");
 				
 			}
 		}

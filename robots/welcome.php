@@ -1,3 +1,58 @@
+<?php
+
+if (isset($_POST["login"]))
+{
+  
+			
+			$role = "";
+			$user = $_POST['user'];
+			$pass = $_POST['pass'];
+			include "dbase.php";	
+			$status = "";
+			$sql = "Select * from account_det where usr_name = '$user' and usr_pass = '$pass'";
+			$res = $con->query($sql);
+			$cset = 0;
+			while($row = mysqli_fetch_array($res))
+				{
+					$cset = 1;
+					$role = $row['per_status'];
+					$status = $row['usr_status'];
+				}
+			
+			
+			if ($cset == 0)
+			{
+					$type = "error";
+					$message = "Account is not recognized!";
+			}
+			else
+			{
+						if (($role === 'Security Guard') && ($status === 'activated')) 
+							{
+								
+								header('location:robots/attend.php');
+							
+				
+							}
+						else if (($role === 'Administrator') && ($status === 'activated')) 
+							{
+								define("Myheader", TRUE);
+								header('location:robots/admin.php');
+								
+							}
+						
+						else
+							{
+							$type = "error";
+							 $message = "Account is not activated!";
+							}
+			}
+
+}
+?>
+
+
+
 <html lang="en">
 <head>
 	<title>Login Page</title>
@@ -19,8 +74,49 @@
 	<link rel="stylesheet" type="text/css" href="style/css/util.css">
 	<link rel="stylesheet" type="text/css" href="style/css/main.css">
 <!--===============================================================================================-->
+<script type='text/javascript'>
+function noBack()
+{
+	
+	window.history.forward();
+}
+noBack();
+window.onload = noBack;
+window.onpageshow = function(evt)  { if (evt.persisted) noBack() }
+window.onunload = function () { void (0) }
+</script>
+ <style>    
+
+
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
+}
+
+
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+
+.error {
+	font-size:15px;
+	color:red;
+  
+}
+
+div#response.display-block {
+    display: block;
+}
+</style>
 </head>
-<body>
+<body onload="$('#uname').focus();">
 
 	<div class="limiter">
 	
@@ -30,13 +126,13 @@
 			&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
 				
 
-				<form class="login100-form validate-form" method="post" action="robots/verifyacc.php">
+				<form class="login100-form validate-form" method="post" >
 					<span class="login100-form-title">
 						MEMBER LOGIN
 					</span>
 
 					<div class="wrap-input100 validate-input">
-						<input class="input100" type="text" name="user" placeholder="Username">
+						<input class="input100" type="text" name="user"  placeholder="Username" id="uname">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-user" aria-hidden="true"></i>
@@ -64,6 +160,9 @@
 						</a>
 					</div>
 
+					
+					 <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
+    
 					
 					
 				</form>

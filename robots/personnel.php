@@ -1,4 +1,44 @@
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 
+
+<?php
+if (isset($_POST['bnsearch']))
+{
+	$val = $_POST['valtolook'];
+	$qry = "Select * from account_det where concat(card_number,last_name,first_name) like '%".$val."%'";
+	$search_result = filterTbl($qry);
+}
+else{
+	$qry = "Select * from account_det";
+	$search_result = filterTbl($qry);
+}
+function filterTbl($qry)
+{
+	$con = mysqli_connect("localhost", "root", "", "amsdb");
+	$fltr_res = mysqli_query($con, $qry);
+	return $fltr_res;
+}
+?>
+
+
+<?php
+session_start();
+
+if(isset($_GET['statu']))
+{
+	$stat = $_GET['statu'];
+	$err = $_GET['err'];
+	$type = $err;
+	$message = $stat;
+	
+}
+?>
 <html lang="en">
 
 <head>
@@ -27,6 +67,68 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+  <style>    
+
+
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
+}
+
+.btn-submit {
+	background: #333;
+	border: #1d1d1d 1px solid;
+    border-radius: 2px;
+	color: #f0f0f0;
+	cursor: pointer;
+    padding: 5px 20px;
+    font-size:0.9em;
+}
+
+.tutorial-table {
+    margin-top: 40px;
+    font-size: 0.8em;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tutorial-table th {
+    background: #f0f0f0;
+    border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.tutorial-table td {
+    background: #FFF;
+	border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+.success {
+    background: #c7efd9;
+    border: #bbe2cd 1px solid;
+}
+
+.error {
+    background: #fbcfcf;
+    border: #f3c6c7 1px solid;
+}
+
+div#response.display-block {
+    display: block;
+}
+</style>
 </head>
 
 <body>
@@ -42,7 +144,7 @@
         <!--  search form start -->
         <ul class="nav top-menu">
          
-            <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+             <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -54,7 +156,7 @@
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -128,21 +230,42 @@
           <div class="col-lg-12">
 		  <form method="post" action="">
              <section class="panel">
-              <header class="panel-heading"><center>
-                <p><h3>PERSONNEL DETAILS</h3></p></center>
-				
-				
-              </header>
+            <div class="panel panel-info">
+                <div class="panel-heading">Personnel Record</div>
 			
 					
 				
 				<div class="panel-body">
-                <h4><u><a href="new_faculty.php">New Personnel</a></u></h4>
+				 <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
+  			
+			
+			<div class="nav search-row" id="top_menu">
+											<!--  search form start -->
+												<br>
+											<ul class="nav top-menu">
+											  <li>
+												<form class="navbar-form" action="" method="post">
+												  <input style="font-size:16px;" placeholder="Search" type="text" name="valtolook">
+				
+											  </li>
+											  <li> <button class="btn btn-default" type="submit" name="bnsearch" >
+											  <span class="icon_search"></span>
+											  </button></form> </li> &emsp;
+												<a href="new_personnel.php" class="btn btn-primary btn-sm" title="Bootstrap 3 themes generator">Add Personnel</a>
+         
+											</ul>
+											<!--  search form end -->
+											
+											 <br><br>
+										  </div>
+		      
+				
 				<div>
 				<br>
 				</div>
                   <div class="form-group">
-						  <table class="table">
+				  
+						  <table class="table" style="font-size:80%">
 							<tbody>
 							   <tr>
 								<th><i class="icon_profile"></i> ID</th>
@@ -160,17 +283,10 @@
 							
 								
 					
-							  
 							  <?php
-								include "dbase.php";
-								$sql = "select * from account_det";
-								$result = $con->query($sql);
-								$x = 0;
-								if ($result->num_rows > 0) 
-								{
-									while($row = $result->fetch_assoc())
-									{
-										$idnum = $row['usrid'];
+													while ($row = mysqli_fetch_array($search_result))
+													{
+															$idnum = $row['usrid'];
 										$role = $row['per_status'];
 										$fname = $row['last_name'].', '.$row['first_name'].' '.$row['middle_name'];
 										$address = $row['address'];
@@ -178,24 +294,24 @@
 										$bday = $row['usr_status'];
 										$contact = $row['contact_number'];
 										
-										echo "<tr>";
-										echo "<td>".$idnum."</td>";
+											echo "<tr>";
+											echo "<td>".$idnum."</td>";
 											echo "<td>".$fname."</td>";
 											echo "<td>".$address."</td>";
 										
 											echo "<td>".$contact."</td>";
 											echo "<td>".$role."</td>";
 											echo "<td>".$bday."</td>";
-											echo "<td><a  href=\"reaccount.php?id=$idnum\" >Restore</a>
+											echo "<td>
+										
+											
+											<a  href=\"reaccount.php?id=$idnum\" >Restore</a>
 											<a style='color:red;' href=\"updatestatus.php?id=$idnum\" >Activate</a>
 											<a style='color:green;' href=\"destat.php?id=$idnum\" >Deactivate</a>
 											<a style='color:orange;' href=\"upd_fc.php?id=$idnum\" >Update</a></td>";
-											$x = $x + 1;
-									}
-								}
-							  ?>
-							  
-							  
+													}
+												  ?>
+						
 							  
 							</tbody>
 						  </table>

@@ -1,4 +1,14 @@
 <?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
+
+
+
+<?php
 $conn = mysqli_connect("localhost","root","","amsdb");
 require_once('vendor/php-excel-reader/excel_reader2.php');
 require_once('vendor/SpreadsheetReader.php');
@@ -231,7 +241,7 @@ div#response.display-block {
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+            <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -243,7 +253,7 @@ div#response.display-block {
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">

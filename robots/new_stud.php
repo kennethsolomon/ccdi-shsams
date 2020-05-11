@@ -1,4 +1,10 @@
-
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 <html lang="en">
 
 <head>
@@ -27,7 +33,11 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
-  <script src="../style/js/jquery.js"></script>
+   <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="../style/css/style.css" rel="stylesheet">
+  <link href="../style/css/style-responsive.css" rel="stylesheet" />
+    <script src="../style/js/jquery.js"></script>
   <script type='text/javascript'>
 function preview_image(event) 
 {
@@ -39,6 +49,20 @@ function preview_image(event)
  }
  reader.readAsDataURL(event.target.files[0]);
 }
+
+function isNumberKey(evt)
+      {
+         var charCode = (evt.which) ? evt.which : event.keyCode
+         if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+ 
+         return true;
+      }
+
+
+	
+	  
+	  
 </script>
   <style>
 {
@@ -80,7 +104,7 @@ ob_start();
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+             <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -92,7 +116,7 @@ ob_start();
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -120,14 +144,7 @@ ob_start();
                       </a>
 
           </li>
-		   <li>
-            <a class="" href="fclass.php">
-                          <i class=""></i>
-                          <span>Class</span>
-
-                      </a>
-
-          </li>
+		  
           <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
@@ -172,12 +189,9 @@ ob_start();
           <div class="col-lg-12">
 		     
              <section class="panel">
-              <header class="panel-heading">
-                <center>
-                <p><h3 style="color:blue;">CREATE NEW STUDENT DETAILS</h3></p></center>
-				
-				
-              </header>
+              			 <div class="panel panel-info">
+                <div class="panel-heading">Student Details</div>
+               
 					
 				
 				<div class="panel-body">
@@ -186,9 +200,140 @@ ob_start();
 						  <div class="column">
 								PERSONAL INFORMATION <br><br>
 								Identification Number:
-								<input type="text" name="idnum" class="form-control" >
+								<input type="text" name="idnum" id="cc" class="form-control" onkeypress="return isNumberKey(event)">
 								Card Number:
-								<input type="text" name="cardnum" class="form-control" >
+						
+								<input type="text" name="cardnum" id="scanInput" class="form-control" onkeypress="return isNumberKey(event)">
+							<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+								<script src="../style/js/jquery-3.3.1.min.js"></script>
+
+				<script>
+
+				var inputStart, inputStop, firstKey, lastKey, timing, userFinishedEntering;
+				var minChars = 3;
+
+				// handle a key value being entered by either keyboard or scanner
+				$("#scanInput").keypress(function (e) {
+					// restart the timer
+					if (timing) {
+						clearTimeout(timing);
+					}
+					
+					// handle the key event
+					if (e.which == 13) {
+						// Enter key was entered
+						
+						// don't submit the form
+						e.preventDefault();
+						
+						// has the user finished entering manually?
+						if ($("#scanInput").val().length >= minChars){
+							userFinishedEntering = true; // incase the user pressed the enter key
+							inputComplete();
+						}
+					}
+					else {
+						// some other key value was entered
+						
+						// could be the last character
+						inputStop = performance.now();
+						lastKey = e.which;
+						
+						// don't assume it's finished just yet
+						userFinishedEntering = false;
+						
+						// is this the first character?
+						if (!inputStart) {
+							firstKey = e.which;
+							inputStart = inputStop;
+							
+							// watch for a loss of focus
+							$("body").on("blur", "#scanInput", inputBlur);
+						}
+						
+						// start the timer again
+						timing = setTimeout(inputTimeoutHandler, 500);
+					}
+				});
+
+				// Assume that a loss of focus means the value has finished being entered
+				function inputBlur(){
+					clearTimeout(timing);
+					if ($("#scanInput").val().length >= minChars){
+						userFinishedEntering = true;
+						inputComplete();
+					}
+				};
+
+
+				// reset the page
+				$("#reset").click(function (e) {
+					e.preventDefault();
+					resetValues();
+				});
+
+				function resetValues() {
+					// clear the variables
+					inputStart = null;
+					inputStop = null;
+					firstKey = null;
+					lastKey = null;
+					// clear the results
+					inputComplete();
+				}
+
+				// Assume that it is from the scanner if it was entered really fast
+				function isScannerInput() {
+					return (((inputStop - inputStart) / $("#scanInput").val().length) < 15);
+				}
+
+				// Determine if the user is just typing slowly
+				function isUserFinishedEntering(){
+					return !isScannerInput() && userFinishedEntering;
+				}
+
+				function inputTimeoutHandler(){
+					// stop listening for a timer event
+					clearTimeout(timing);
+					// if the value is being entered manually and hasn't finished being entered
+					if (!isUserFinishedEntering() || $("#scanInput").val().length < 3) {
+						// keep waiting for input
+						return;
+					}
+					else{
+						reportValues();
+					}
+				}
+
+				// here we decide what to do now that we know a value has been completely entered
+				function inputComplete(){
+					// stop listening for the input to lose focus
+					$("body").off("blur", "#scanInput", inputBlur);
+					// report the results
+					reportValues();
+				}
+
+				function reportValues() {
+					// update the metrics
+				   
+					if (!inputStart) {
+						// clear the results
+						$("#resultsList").html("");
+						$("#scanInput").focus().select();
+					} else {
+						
+						
+						
+						
+						$("#scanInput").focus().select();
+						inputStart = null;
+					}
+				}
+
+				$("#cc").focus();
+							</script>
+
+						
 								Last name:
 								<input type="text" name="lname" class="form-control" >
 								First name:
@@ -198,7 +343,10 @@ ob_start();
 								Address:									   							
 								<input type="text" name="add" class="form-control"> 
 								Birthday
-								<input type="text" name="bday" class="form-control" >
+									 <script src="bootstrap-datepicker.js"></script>                        
+								<input id="dp1" name="bday" type="text" value="28-10-2013" size="16" class="form-control">
+						
+           
 								Gender
 							
 									<select name="gender" class="form-control">
@@ -211,7 +359,13 @@ ob_start();
 								
 								COURSE DETAILS<br>
 								<br>Track/Strand
-								<input type="text" name="track" class="form-control">
+								<select name="track" class="form-control">
+										<option value="ABM">ABM</option>
+										<option value="GAS">GAS</option>
+										<option value="STEM">STEM</option>
+										<option value="TVL-Animation">TVL-Animation</option>
+										<option value="TVL-ICT">TVL-ICT</option>
+								</select>
 								Year Level
 								<select name="yrlvl" class="form-control">
 										<option value=11>11</option>
@@ -224,7 +378,7 @@ ob_start();
 								<br> Contact Person
 								<input type="text" name="conper" class="form-control"> 
 								Contact Number
-								<input type="text" name="connum" class="form-control"> 
+								<input type="text" name="connum" class="form-control" onkeypress="return isNumberKey(event)"> 
 								
 								<br>
 								<button name="save_p" type="submit" class="btn btn-success  btn-lg">Save</button>
@@ -344,8 +498,8 @@ ob_start();
           }
         });
       });
+	   $('#dp1').datepicker();
     </script>
-
 </body>
 
 </html>

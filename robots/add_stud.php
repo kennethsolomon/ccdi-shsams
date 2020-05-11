@@ -26,19 +26,18 @@ include 'dbase.php';
 			  
 			  $sql = "insert into per_files values('$sc_id','$cardnum','$lname','$fname','$mname','$add','$gender','$bday','$trck','$yrlvl','$sect','$conper','$connum','student','$imgs')";
 				if($con->query($sql)){
-					echo "<script>alert('Succesfully save!')</script>";
-					header("location:request.php");
+					header("Location:request.php?statu=Record save successfully!&err=success");
 				}
 				else
 				{
-					echo "<script>alert('Cannot save. Please recheck your filled data!')</script>";
+					header("Location:request.php?statu=Unable to save record!&err=error");
 					
 				}
 			}
 			else
 			{
 				
-			echo "<script>alert('Please choose image file!')</script>";
+			header("Location:request.php?statu=Unable to save record!&err=error");
 			
 			}
 		

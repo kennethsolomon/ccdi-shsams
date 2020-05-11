@@ -1,4 +1,94 @@
+<?php
 
+if (isset($_POST['savebtn']))
+{
+	$pwd = $_POST['pass'];
+	$repwd = $_POST['repass'];
+	if ($pwd == $repwd)
+	{
+			include "dbase.php";
+			$idnumber = date('yMdHms');
+			$lname = $_POST['lastname'];
+			$fname = $_POST['firstname'];
+			$mname = $_POST['middlename'];
+			$address = $_POST['add'];
+			$bdy = $_POST['bday'];
+			$gender = $_POST['gender'];
+			$connum = $_POST['cnum'];
+			$role = $_POST['role'];
+			$user = $_POST['uname'];
+			$pass = $_POST['pass'];
+			if ($lname == '' or $fname == '' or $mname == '' or $gender == '' or $connum == '' or $user == '' or $pass == '')
+			{
+					$type = "error";
+					$message = "Unable to save data! Complete the boxes!";
+			}
+			else {
+				
+						$qry = "SELECT * FROM  account";
+						$result = $con->query($qry);
+						
+						if ($result->num_rows > 0) 
+						{
+							$sql = "SELECT * FROM  per_files where (last_name like '$lname' and first_name like '$fname' and middle_name = '$mname')";
+							$result = $con->query($sql);
+							
+							if ($result->num_rows > 0) 
+									{
+										$type = "error";
+										$message = "Name already exist!";
+									}
+
+							else{
+										$sql = "insert into per_files values ('$idnumber','none','$lname','$fname','$mname','$address','$gender','$bdy','none',0,'none','none','$connum','$role','')";
+										$con->query($sql);
+										
+										$pas="insert into account values (0,'$idnumber','$user','$pass','','pending request')";
+										if($con->query($pas))
+									{
+										$type = "success";
+										$message = "Save successfully! <a href='..\index.php'>proceed to LOGIN</a>";
+									}
+									else
+									{
+										$type = "error";
+										$message = "Unable to save data!";
+									}
+									}			
+						}
+						else{
+									$sql = "insert into per_files values ('$idnumber','none','$lname','$fname','$mname','$address','$gender','$bdy','none',0,'none','none','$connum','Administrator','')";
+									$con->query($sql);			
+									$pas="insert into account values (0,'$idnumber','$user','$pass','','activated')";
+									if($con->query($pas))
+									{
+										$type = "success";
+										$message = "New administrator is save successfully! <a href='..\index.php'>proceed to LOGIN</a>";
+									}
+									else
+									{
+										$type = "error";
+										$message = "Unable to save data!";
+									}
+									
+								}
+							$con->close();	 
+				}
+	}
+	else
+	{
+		$type = "error";
+        $message = "Mismatch password!";
+	}
+	
+}
+
+
+
+
+
+
+?>
 <html lang="en">
 
 <head>
@@ -27,7 +117,78 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
-</head><script>
+ <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+     <!-- Custom styles -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet" />
+
+  <script src="../style/js/jquery.js"></script>
+   <style>    
+
+
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
+}
+
+.btn-submit {
+	background: #333;
+	border: #1d1d1d 1px solid;
+    border-radius: 2px;
+	color: #f0f0f0;
+	cursor: pointer;
+    padding: 5px 20px;
+    font-size:0.9em;
+}
+
+.tutorial-table {
+    margin-top: 40px;
+    font-size: 0.8em;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tutorial-table th {
+    background: #f0f0f0;
+    border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.tutorial-table td {
+    background: #FFF;
+	border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+.success {
+    background: #c7efd9;
+    border: #bbe2cd 1px solid;
+}
+
+.error {
+    background: #fbcfcf;
+    border: #f3c6c7 1px solid;
+}
+
+div#response.display-block {
+    display: block;
+}
+</style>
+  
+  
+  
+  </head><script>
 function isNumberKey(evt)
       {
          var charCode = (evt.which) ? evt.which : event.keyCode
@@ -71,7 +232,7 @@ function isNumberKey(evt)
         <!--overview start--><br><br><br><br><br><br>
         <div class="row">
           <div class="col-lg-6">
-            <form class="form-horizontal " method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <form class="form-horizontal " method="post" action="">
 		
 			<section class="panel">
               <header class="panel-heading">
@@ -104,7 +265,8 @@ function isNumberKey(evt)
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label">Birthday</label>
                     <div class="col-sm-10">
-                      <input name="bday" type="text" class="form-control">
+                      <script src="bootstrap-datepicker.js"></script>                        
+								<input id="dp1" name="bday" type="text" value="28-10-2013" size="16" class="form-control">
                     </div>
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label">Address</label>
@@ -156,7 +318,9 @@ function isNumberKey(evt)
 				   <label class="col-sm-2 control-label"style="color:white;">Re-type Password</label>
 					<div class="col-sm-10">
                       <button name="savebtn" type="submit" class="btn btn-primary">Save</button>
-                    </div><br><br><br><br><br><br><br>
+                    </div><br><br>
+					 <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
+    <br><br><br><br><br>
             
               </div>
             </section>
@@ -258,30 +422,9 @@ function isNumberKey(evt)
           }
         });
       });
+	   $('#dp1').datepicker();
     </script>
-<?php
 
-if (isset($_POST['savebtn']))
-{
-	$pwd = $_POST['pass'];
-	$repwd = $_POST['repass'];
-	if ($pwd == $repwd)
-	{
-		require 'signsave.php';
-	}
-	else
-	{
-		echo "<script>alert('Password mismatch!')</script>";
-	}
-	
-}
-
-
-
-
-
-
-?>
 </body>
 
 </html>

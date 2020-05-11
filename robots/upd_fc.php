@@ -1,3 +1,45 @@
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
+
+
+<?php
+if (isset($_POST['update']))
+{
+	
+	$lname = $_POST['lname'];
+	$fname = $_POST['fname'];
+	$mname = $_POST['mname'];
+	$add = $_POST['add'];
+	$gender = $_POST['gender'];
+	$bday = $_POST['bday'];
+	$role = $_POST['role'];
+	$connum = $_POST['connum'];
+	$id = $_POST['idno'];
+	include 'dbase.php';
+	
+		
+	$sql = "update per_files set last_name = '$lname', first_name = '$fname', middle_name = '$mname', address = '$add', birthday = '$bday', gender = '$gender', contact_number = '$connum', per_status  = '$role' where identification_number = '$id'";
+
+		
+
+		if($con->query($sql)){
+		
+						header("Location:personnel.php?statu=Record save successfully!&err=success");
+			
+		}
+		else
+		{
+			 header("Location:personnel.php?statu=Unable to save record!&err=error");
+			
+		}
+	
+}
+?>
 
 <html lang="en">
 
@@ -27,7 +69,85 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
-</head>
+    <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="../style/css/style.css" rel="stylesheet">
+  <link href="../style/css/style-responsive.css" rel="stylesheet" />
+  
+<style>    
+
+
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
+}
+
+.btn-submit {
+	background: #333;
+	border: #1d1d1d 1px solid;
+    border-radius: 2px;
+	color: #f0f0f0;
+	cursor: pointer;
+    padding: 5px 20px;
+    font-size:0.9em;
+}
+
+.tutorial-table {
+    margin-top: 40px;
+    font-size: 0.8em;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tutorial-table th {
+    background: #f0f0f0;
+    border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.tutorial-table td {
+    background: #FFF;
+	border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+.success {
+    background: #c7efd9;
+    border: #bbe2cd 1px solid;
+}
+
+.error {
+    background: #fbcfcf;
+    border: #f3c6c7 1px solid;
+}
+
+div#response.display-block {
+    display: block;
+}
+</style>
+   <script>
+    
+  function isNumberKey(evt)
+      {
+         var charCode = (evt.which) ? evt.which : event.keyCode
+         if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+ 
+         return true;
+      }
+  </script>
+  </head>
 
 <body>
   <!-- container section start -->
@@ -42,7 +162,7 @@
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+          <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -54,7 +174,7 @@
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -82,14 +202,7 @@
                       </a>
 
           </li>
-		  <li>
-            <a class="" href="fclass.php">
-                          <i class=""></i>
-                          <span>Class</span>
-
-                      </a>
-
-          </li>
+		  
           <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
@@ -98,10 +211,18 @@
                       </a>
 
           </li>
+		  <li>
+            <a class="" href="announce.php">
+                          <i class=""></i>
+                          <span>Announcement</span>
+
+                      </a>
+
+          </li>
           <li>
             <a class="" href="account.php">
                           <i class=""></i>
-                          <span>My Account</span>
+                          <span>Account</span>
 
                       </a>
 
@@ -124,7 +245,7 @@
         <!--overview start--><br><BR>
         <div class="row">
           <div class="col-lg-12">
-		  <form method="post" action="">
+		  
              <section class="panel">
               <header class="panel-heading">
                 <center>
@@ -150,53 +271,73 @@
 										$gender= $row['gender'];
 										$bday = $row['birthday'];
 										$connum = $row['contact_number'];
-										$role = $row['usr_role'];
-										
+										$role = $row['per_status'];
+									
 										
 									}
 								}
 				echo '<div class="panel-body">
 					
-					
+					<script src="../style/js/jquery-3.3.1.min.js"></script>
 							
-					<form enctype="multipart/form-data" method="post" action="'. $_SERVER["PHP_SELF"] .'">
+						<form enctype="multipart/form-data" method="post" action="">	
 					
-				
-						<input type="text" name="lname" class="form-control" value="'.$lname.'">
+						<input readonly type="text" name="idno" class="form-control" value="'.$id.'"> 
+						<br>
+						<input type="text" name="lname" class="form-control" placeholder="lastname" value="'.$lname.'" >
 						<br>			 
-						<input type="text" name="fname" class="form-control" value="'.$fname.'">
+						<input type="text" name="fname" class="form-control" placeholder="firstname" value="'.$fname.'" >
+						
 						<br>									  
-						<input type="text" name="mname" class="form-control" value="'.$mname.'" >
+						<input type="text" name="mname" class="form-control" placeholder="middlename" value="'.$mname.'" >
+							
 						<br>									   							
-						<input type="text" name="add" class="form-control" value="'.$address.'"> 
+						<input type="text" name="add" class="form-control" placeholder="address" value="'.$address.'" > 
 						<br>
-						<input type="text" name="bday" class="form-control" value="'.$bday.'"> 
+							<script src="bootstrap-datepicker.js"></script>    
+							<input  id="dp1" type="text" name="bday" class="form-control" value="'.$bday.'" >
+						
 						<br>
-						<input type="text" name="gender" class="form-control" value="'.$gender.'"> 
+						
+					
+							<select name="gender" class="form-control">
+										<option value="'.$gender.'">'.$gender.'</option>
+										<option value="Female">Female</option>
+										<option value="Male">Male</option>
+								</select>						
 						<br>
-						<input type="text" name="conper" class="form-control" value="'.$connum.'"> 
+						<input type="text" name="connum" class="form-control" placeholder="contact number" onkeypress="return isNumberKey(event)" value="'.$connum.'" > 
 						<br>
-						<input type="text" name="connum" class="form-control" value="'.$role.'"> 
+							<select name="role" class="form-control">
+										<option value="'.$role.'">'.$role.'</option>
+										<option value="Administrator">Administrator</option>
+										<option value="Security Guard">Security Guard</option>
+								</select>	
+						
 						<br>
 						
 						<button name="update" type="submit" class="btn btn-success  btn-sm">Save Changes</button>	 
+						
+    
 						</form>		
                
 				</div>';
 				?>
-            </section>
+       
+			</section>
 		</div>
 		</div>
 
 
-	</form>
+
     
     </section>
     <!--main content end-->
   </section>
   <!-- container section start -->
 
-  <!-- javascripts -->
+    <!-- javascripts -->
+	<script src="bootstrap-datepicker.js"></script>    
   <script src="../assets/js/jquery.js"></script>
   <script src="../assets/js/jquery-ui-1.10.4.min.js"></script>
   <script src="../assets/js/jquery-1.8.3.min.js"></script>
@@ -281,41 +422,10 @@
           }
         });
       });
+	    $('#dp1').datepicker();
     </script>
 
 </body>
 
 </html>
-<?php
-if (isset($_POST['update']))
-{
-	
-	$lname = $_POST['lname'];
-	$fname = $_POST['fname'];
-	$mname = $_POST['mname'];
-	$add = $_POST['add'];
-	$gender = $_POST['gender'];
-	$bday = $_POST['bday'];
-	$conper = $_POST['conper'];
-	$connum = $_POST['connum'];
-	include 'dbase.php';
-	
-		
-	$sql = "update per_files set last_name = '$lname', first_name = '$fname', middle_name = '$mname', address = '$add', birthday = '$bday', gender = '$gender' where identification_number = '$id'";
-
-		
-
-		if($con->query($sql)){
-		
-			echo "<script>alert('Succesfully save!')</script>";
-			
-		}
-		else
-		{
-			echo "<script>alert('Cannot save. Please recheck your filled data!')</script>";
-			
-		}
-	
-}
-?>
 

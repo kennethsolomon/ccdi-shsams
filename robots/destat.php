@@ -7,7 +7,7 @@ $id = $_GET['id'];
  
 //deleting the row from table
 
-$sql = "Select * from account where account_id = '$id'";
+$sql = "Select * from account_det where identification_number = '$id'";
 $result = $con->query($sql);
 if ($result->num_rows > 0)
 {
@@ -16,12 +16,22 @@ if ($result->num_rows > 0)
 		$stat = $row['usr_status'];
 	}
 }
-if ($stat === 'activated') $result = mysqli_query($con, "UPDATE account SET usr_status='deactivate' where account_id = '$id'");
+if ($stat === 'activated') 
+{
+	$sql="UPDATE account SET usr_status='deactivate' where usrid = '$id'";
+		if($con->query($sql)){
+			header("Location:personnel.php?statu=Account deactivated succesfully!&err=success");
+		}
+		else
+		{
+				header("Location:personnel.php?statu=Unable to save changes!&err=error");
+		}
+}
+else
+		{
+			header("Location:personnel.php?statu=No changes had been made!&err=error");
+		}
 
-	
 
- 
- 
-header("Location:account.php");
 
 ?>

@@ -1,4 +1,27 @@
+<?php
+if (isset($_POST['update']))
+{
+		$tr= $_POST['trxnnum'];
+	$atitle= $_POST['atitle'];
+	$adate=$_POST['adate'];
+	$astatus = $_POST['astatus'];
+	$aparty = $_POST['aparty'];
+	include 'dbase.php';
+	$sql = "update announcement set announce_desc = '$atitle', announce_date = '$adate', announce_stat='$astatus', dateencode = '$aparty' where trxn_num = '$tr'";
 
+		if($con->query($sql)){
+			
+			header("Location:announce.php?statu=Changes save successfully !&err=success");
+			
+		}
+		else
+		{
+			header("Location:announce.php?statu=Unable to save changes!&err=error");
+			
+		}
+	
+}
+?>
 <html lang="en">
 
 <head>
@@ -9,7 +32,7 @@
   <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
   <link rel="shortcut icon" href="img/favicon.png">
 
-  <title>Update Student</title>
+  <title>Update Announcement</title>
 
   <link href="../style/css/bootstrap.min.css" rel="stylesheet">
   <link href="../style/css/bootstrap-theme.css" rel="stylesheet">
@@ -27,6 +50,11 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+   <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="../style/css/style.css" rel="stylesheet">
+  <link href="../style/css/style-responsive.css" rel="stylesheet" />
+    <script src="../style/js/jquery.js"></script>
 </head>
 
 <body>
@@ -60,13 +88,13 @@
       <div id="sidebar" class="nav-collapse ">
        <!-- sidebar menu start--><br><BR>
         <ul class="sidebar-menu">
-          <li >
+             <li >
             <a class="" href="admin.php">
                           <i class="icon_house_alt"></i>
                           <span>Home</span>
                       </a>
           </li>
-          <li >
+          <li class="">
             <a class="" href="request.php">
                           <i class=""></i>
                           <span>Student</span>
@@ -74,22 +102,15 @@
                       </a>
 
           </li>
-		  	  <li>
-            <a class="" href="faculty.php">
+		    <li >
+            <a class="" href="personnel.php">
                           <i class=""></i>
-                          <span>Faculty</span>
+                          <span>Personnel</span>
 
                       </a>
 
           </li>
-		  <li class="active">
-            <a class="" href="fclass.php">
-                          <i class=""></i>
-                          <span>Class</span>
-
-                      </a>
-
-          </li>
+		  
           <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
@@ -98,10 +119,18 @@
                       </a>
 
           </li>
+         <li class="active">
+            <a class="" href="announce.php">
+                          <i class=""></i>
+                          <span>Announcement</span>
+
+                      </a>
+
+          </li>
           <li>
             <a class="" href="account.php">
                           <i class=""></i>
-                          <span>My Account</span>
+                          <span>Account</span>
 
                       </a>
 
@@ -126,45 +155,61 @@
           <div class="col-lg-12">
 		  <form method="post" action="">
              <section class="panel">
-              <header class="panel-heading">
-                <center>
-                <p><h3>UPDATE STUDENT DETAILS</h3></p></center>
-				
-				
-              </header>
+             <div class="panel panel-info">
+                <div class="panel-heading">Student Details</div>
 				<?php
 				$id = $_GET['id'];
 								include "dbase.php";
-								$sql = "select * from sum_of_class where class_code = '$id'";
+								$sql = "select * from announcement where trxn_num = '$id'";
 								$result = $con->query($sql);
 								$x = 0;
 								if ($result->num_rows > 0) 
 								{
 									while($row = $result->fetch_assoc())
 									{
-										$idnum = $row['class_code'];
-										$lname = $row['last_name'].", ".$row['first_name'];
-										$track = $row['tracks'];
-										$sy = $row['sy'];
-										$tr = $row['semester'];
-										$st= $row['class_stat'];
+											$tr = $row['trxn_num'];
+										$title = $row['announce_desc'];
+										$smscon = $row['announce_date'];
+										$party = $row['dateencode'];
+										$dateenc = $row['announce_subj'];
+										$sta= $row['announce_stat'];
 										
 										
 										
 									}
 								}
 				echo '<div class="panel-body">
-					<form enctype="multipart/form-data" method="post" action="'. $_SERVER["PHP_SELF"] .'">
-						<input type="text" name="lname" class="form-control" value="'.$lname.'" disabled>
-						<br>			 
-						<input type="text" name="fname" class="form-control" value="'.$track.'" disabled>
-						<br>									  
-						<input type="text" name="mname" class="form-control" value="'.$sy.'" disabled>
-						<br>									   							
-						<input type="text" name="add" class="form-control" value="'.$tr.'" disabled> 
+					<form enctype="multipart/form-data" method="post" action="">
+					<br><br>
+			
+					 
+					Transaction Number
+						<input readonly type="text" name="trxnnum" class="form-control" value="'.$tr.'" >
+						<br>			 Title
+						<input type="text" name="atitle" class="form-control" value="'.$title.'" >
+						<br>								
+							Party Involve
+							<select name ="aparty" class="form-control">
+													<option value='.$party.'>'.$party.'</option>
+													<option value="SHS">SHS</option>
+													<option value="11">Grade 11</option>
+													<option value="12">Grade 12</option>
+							</select>
+					
 						<br>
-						<input type="text" name="stat" class="form-control" value="'.$st.'"> 
+						Status
+							<select name ="astatus" class="form-control">
+													<option value='.$sta.'>'.$sta.'</option>
+													<option value="on">on</option>
+													<option value="off">off</option>
+													<option value="cancel">cancel</option>
+							</select>
 						<br>
+						Date
+							<script src="bootstrap-datepicker.js"></script>                        
+							<input id="dp1" name="adate" type="text" value="'.$smscon.'" size="16" class="form-control">						
+					
+						<br>	
 					
 						
 						<button name="update" type="submit" class="btn btn-success  btn-sm">Save Changes</button>	 
@@ -269,30 +314,11 @@
           }
         });
       });
+	  $('#dp1').datepicker();
     </script>
 
 </body>
 
 </html>
-<?php
-if (isset($_POST['update']))
-{
-		
-	$sts= $_POST['stat'];
-	include 'dbase.php';
-	$sql = "update per_class set class_stat = '$sts' where class_code = '$id'";
 
-		if($con->query($sql)){
-			
-			echo "<script>alert('Succesfully save!')</script>";
-			
-		}
-		else
-		{
-			echo "<script>alert('Cannot save. Please recheck your filled data!')</script>";
-			
-		}
-	
-}
-?>
 

@@ -1,4 +1,10 @@
-
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 <html lang="en">
 
 <head>
@@ -43,7 +49,7 @@
         <!--  search form start -->
         <ul class="nav top-menu">
          
-            <h1 style="color:darkblue;font-size: 30px;font-family: verdana "><b>COMPUTER COMMUNICATION<br>DEVELOPMENT INSTITUTE<br>RFID Attendance Monitoring System</h1>
+       <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -55,7 +61,7 @@
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -145,41 +151,7 @@
 									}
 								}
 		?>
-		
-		  <div class="row">
-          <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
-            <div class="info-box blue-bg">
-              <i class="fa fa-user"></i>
-              <div class="count"><?php echo $x; ?></div>
-              <div class="title">STUDENT TOTAL</div>
-            </div>
-            <!--/.info-box-->
-          </div>
-          <!--/.col-->
-
-          <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
-            <div class="info-box brown-bg">
-              <i class="fa fa-list"></i>
-              <div class="count"><?php echo $fem; ?></div>
-              <div class="title">FEMALE</div>
-            </div>
-            <!--/.info-box-->
-          </div>
-          <!--/.col-->
-
-          <div class="col-lg-4 col-md-3 col-sm-12 col-xs-12">
-            <div class="info-box dark-bg">
-              <i class="fa fa-list"></i>
-              <div class="count"><?php echo $mal; ?></div>
-              <div class="title">MALE</div>
-            </div>
-            <!--/.info-box-->
-          </div>
-          <!--/.col-->
-
-          
-
-        </div>
+		<br><br>
 		
 		
 		
@@ -193,33 +165,138 @@
               <header class="panel-heading">
                 Attendance Status for Grade 11 SHS
               </header>
-              <div class="panel-body">GAS
+              <div class="panel-body">
+				GAS
                 <div class="progress progress-s">
+				<?php
+				date_default_timezone_set('Asia/Manila');
+				$today = date('F j, Y');
+				$coun = 0;
+				include 'dbase.php';
+				$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'GAS11' group by identification_number";
+				$result = mysqli_query($con,$sql);
+				if ($result->num_rows > 0)
+					{
+						while($row = mysqli_fetch_array($result)) {
+							$coun = $coun + 1;
+						}
+					}
+					$ave = $coun / 100 * 100;
+				echo '
 				
-                  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+				
+				<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+				
+				mysqli_close($con);
+				?>
+                 
                    
                   </div>
-                </div>ANIMATION
+                </div>
+				ANIMATION
                 <div class="progress progress-s">
 				
 				
-                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'TVL-Animation11' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
                    
                   </div>
                 </div>	ABM
                 <div class="progress progress-s">
 			
-                  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                  							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'ABM11' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
+
                     
                   </div>
                 </div>STEM
                 <div class="progress progress-s">
-                  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'STEM11' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
+
                    
                   </div>
                 </div>ICT
                 <div class="progress progress-s">
-                  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                  							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'TVL-ICT11' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
+
                    
                   </div>
                 </div>
@@ -232,33 +309,136 @@
               <header class="panel-heading">
                 Attendance Status for Grade 12 SHS
               </header>
-               <div class="panel-body">GAS
+               <div class="panel-body">	GAS
                 <div class="progress progress-s">
+				<?php
+				date_default_timezone_set('Asia/Manila');
+				$today = date('F j, Y');
+				$coun = 0;
+				include 'dbase.php';
+				$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'GAS12' group by identification_number";
+				$result = mysqli_query($con,$sql);
+				if ($result->num_rows > 0)
+					{
+						while($row = mysqli_fetch_array($result)) {
+							$coun = $coun + 1;
+						}
+					}
+					$ave = $coun / 100 * 100;
+				echo '
 				
-                  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 30%;">
+				
+				<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+				
+				mysqli_close($con);
+				?>
+                 
                    
                   </div>
-                </div>ANIMATION
+                </div>
+				ANIMATION
                 <div class="progress progress-s">
 				
 				
-                  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'TVL-Animation12' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
                    
                   </div>
                 </div>	ABM
                 <div class="progress progress-s">
 			
-                  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                  							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'ABM12' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
+
                     
                   </div>
                 </div>STEM
                 <div class="progress progress-s">
-                  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'STEM12' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
+
                    
                   </div>
                 </div>ICT
                 <div class="progress progress-s">
-                  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 30%">
+                  							<?php
+							date_default_timezone_set('Asia/Manila');
+							$today = date('F j, Y');
+							$coun = 0;
+							include 'dbase.php';
+							$sql = "Select * from grd_attendance where datein = '$today' and concat(trck_str,year_level) = 'TVL-ICT12' group by identification_number";
+							$result = mysqli_query($con,$sql);
+							if ($result->num_rows > 0)
+								{
+									while($row = mysqli_fetch_array($result)) {
+										$coun = $coun + 1;
+									}
+								}
+								$ave = $coun / 100 * 100;
+							echo '
+							
+							
+							<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width:'.$ave.'%">';
+							
+							mysqli_close($con);
+							?>
                    
                   </div>
                 </div>
@@ -367,6 +547,8 @@
           }
         });
       });
+	  
+	  
     </script>
 
 </body>

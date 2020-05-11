@@ -1,4 +1,42 @@
 
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
+
+<?php
+if (isset($_POST['bnsearch']))
+{
+	$val = $_POST['valtolook'];
+	$qry = "Select * from announcement where concat(announce_date,announce_desc,dateencode) like '%".$val."%' ";
+	$search_result = filterTbl($qry);
+}
+else{
+	$qry = "Select * from announcement";
+	$search_result = filterTbl($qry);
+}
+function filterTbl($qry)
+{
+	$con = mysqli_connect("localhost", "root", "", "amsdb");
+	$fltr_res = mysqli_query($con, $qry);
+	return $fltr_res;
+}
+?>
+<?php
+session_start();
+
+if(isset($_GET['statu']))
+{
+	$stat = $_GET['statu'];
+	$err = $_GET['err'];
+	$type = $err;
+	$message = $stat;
+	
+}
+?>
 <html lang="en">
 
 <head>
@@ -28,26 +66,68 @@
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
   <script src="../style/js/jquery.js"></script>
-  <style>
-{
-  box-sizing: border-box;
+ <style>
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
 }
 
-
-.column {
-  float: left;
-  width: 50%;
-  padding: 10px;
-  height: 500px;
+.btn-submit {
+	background: #333;
+	border: #1d1d1d 1px solid;
+    border-radius: 2px;
+	color: #f0f0f0;
+	cursor: pointer;
+    padding: 5px 20px;
+    font-size:0.9em;
 }
 
+.tutorial-table {
+    margin-top: 40px;
+    font-size: 0.8em;
+	border-collapse: collapse;
+	width: 100%;
+}
 
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
+.tutorial-table th {
+    background: #f0f0f0;
+    border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.tutorial-table td {
+    background: #FFF;
+	border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+.success {
+    background: #c7efd9;
+    border: #bbe2cd 1px solid;
+}
+
+.error {
+    background: #fbcfcf;
+    border: #f3c6c7 1px solid;
+}
+
+div#response.display-block {
+    display: block;
 }
 </style>
+
+
 </head>
 
 <body>
@@ -66,8 +146,7 @@ ob_start();
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
-         
+           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>   
         </ul>
         <!--  search form end -->
       </div>
@@ -78,7 +157,7 @@ ob_start();
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -151,78 +230,61 @@ ob_start();
           <div class="col-lg-12">
 		     
              <section class="panel">
-              <header class="panel-heading">
-                <center>
-                <p><h3>Broadcast Announcement(s)</h3></p></center>
+              <div class="panel panel-info">
+                <div class="panel-heading">Broadcast Announcement</div>
+   
+									
+				 <div class="panel-content">
+							 <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
+ 
+										<div class="nav search-row" id="top_menu">
+											<!--  search form start -->
+												<br>
+											<ul class="nav top-menu">
+											  <li>
+												<form class="navbar-form" action="" method="post">
+												  <input style="font-size:16px;" placeholder="Search" type="text" name="valtolook">
 				
-				
-              </header>
-					
-				
-				<div class="panel-body">
-					<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" enctype="multipart/form-data" >
-						<div class="row">
-						  <div class="column">
-								Announcement Details <br><br>
-								Title
-								<input type="text" name="title" class="form-control" >
+											  </li>
+											  <li> <button class="btn btn-default" type="submit" name="bnsearch" >
+											  <span class="icon_search"></span>
+											  </button></form> </li> &emsp;
+											  <a href="broad.php" class="btn btn-primary btn-sm"  title="Bootstrap 3 themes generator">Create Announcement</a>
+											
 								
-								Content SMS:
-								<textarea rows="10" name="smscon" class="form-control">
-								Content here....
-								 </textarea>
-								<br><br>
-								<button name="sase" type="submit" class="btn btn-success  btn-sm">Send & Save</button>
-												
-						  </div>
-						  <div class="column">
-								 Involve Party<br>
-								<br> 
-								Party
-								<select  name='party' class='form-control'>
-									<option value="SHS">SHS</option>
-									<option value="11">Grade 11</option>
-									<option value="12">Grade 12</option>
-								</select>
-								<br>
-								
-						  </div>
-						  
-						  
-						  
+											</ul>
+											<!--  search form end -->
+											
+											 <br><br>
+										  </div>
+
 						
-						  
-						  
-						</div>	
-						<div class="row">
-						  <table class="table">
+						
+									
+									  <div class="form-group">
+											  <table class="table" style="font-size:80%">
 							<tbody>
 							  <tr>
-								<th><i class="icon_profile"></i> ID</th>
+								<th> TRXNo</th>
 								<th><i ></i> Title</th>
-								<th><i ></i> Description</th>
+								<th><i ></i> Date</th>
 								<th><i ></i> Involve Party</th>
-								<th><i ></i> Date Encoded</th>
+								
 								<th><i ></i> Status</th>
+								<th><i class="icon_cogs"></i> Action</th>
 								
 							
 							  </tr>
 							  
 							  <?php
-								include "dbase.php";
-								$sql = "select * from annoucement";
-								$result = $con->query($sql);
-								$x = 0;
-								if ($result->num_rows > 0) 
-								{
-									while($row = $result->fetch_assoc())
-									{
-										$tr = $row['tr_no'];
-										$title = $row['annouce_title'];
-										$smscon = $row['an_des'];
-										$party = $row['party'];
-										$dateenc = $row['dateenc'];
-										$sta= $row['an_stat'];
+								while ($row = mysqli_fetch_array($search_result))
+													{
+										$tr = $row['trxn_num'];
+										$title = $row['announce_desc'];
+										$smscon = $row['announce_date'];
+										$party = $row['dateencode'];
+										$dateenc = $row['announce_subj'];
+										$sta= $row['announce_stat'];
 									
 									
 										
@@ -231,12 +293,12 @@ ob_start();
 											echo "<td>".$title."</td>";
 											echo "<td>".$smscon."</td>";
 											echo "<td>".$party."</td>";
-											echo "<td>".$dateenc."</td>";
+										
 											echo "<td>".$sta."</td>";
+											echo "<td><a href=\"upd_announce.php?id=$tr\" >Update Details</a></td>";
 											
-											
-											$x = $x + 1;
-									}
+									
+									
 								}
 							  ?>
 							  
@@ -245,7 +307,7 @@ ob_start();
 							</tbody>
 						  </table>
 						</div>
-					</form>		
+				
                
 				</div>
             </section>

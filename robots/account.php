@@ -1,4 +1,81 @@
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 
+<?php
+
+if (isset($_POST['updatebtn']))
+{
+			include "dbase.php";
+			$idnumber = $_POST['userid'];
+			$user = $_POST['username'];
+			$cpass = $_POST['cpass'];
+			$npass = $_POST['npass'];
+			$vpass = $_POST['vpass'];
+			$sql = "SELECT * FROM account where usrid = '$idnumber' and usr_pass = '$cpass' ";
+			$result = $con->query($sql);
+			
+			if ($result->num_rows > 0) 
+			{
+							
+				if ($user <> "" and $npass <> "") 
+				{
+						if ($vpass <> "")
+						{
+							if ($vpass === $npass) $sql="update account set usr_name ='$user', usr_pass = '$npass' where usrid = '$idnumber'";
+							else 
+								{
+									$message = "Password mismatch!";
+									$type = "error";
+								}
+						}
+						else 
+							{
+							$message = "Please fill up verify password box!";
+							$type = "error";
+							}
+				}
+				else if ($user <> '' and $npass == '') $sql="update account set usr_name ='$user' where usrid = '$idnumber'";
+				else if ($user == '' and $npass <> '') 
+				{
+					if ($vpass <> "")
+						{
+							if ($vpass === $npass) $sql="update account set usr_pass = '$npass' where usrid = '$idnumber'";
+							else
+								{
+									$message = "Password mismatch!";
+									$type = "error";
+								}
+						}
+						else 
+						{
+							$message = "Please fill up verify password box!";
+							$type = "error";
+						}
+				}
+					
+				if ($con->query($sql)) 
+				{
+									$message = "Changes save successfully!";
+									$type = "success";
+				}
+			}
+
+			else 
+			{
+				$message = "Account not found!";
+				$type = "error";
+			}
+			
+			
+			
+			$con->close();
+}
+?>
 <html lang="en">
 
 <head>
@@ -27,6 +104,66 @@
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+  <style>
+.outer-container {
+	background: #F0F0F0;
+	border: #e0dfdf 1px solid;
+	padding: 40px 20px;
+	border-radius: 2px;
+}
+
+.btn-submit {
+	background: #333;
+	border: #1d1d1d 1px solid;
+    border-radius: 2px;
+	color: #f0f0f0;
+	cursor: pointer;
+    padding: 5px 20px;
+    font-size:0.9em;
+}
+
+.tutorial-table {
+    margin-top: 40px;
+    font-size: 0.8em;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.tutorial-table th {
+    background: #f0f0f0;
+    border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+.tutorial-table td {
+    background: #FFF;
+	border-bottom: 1px solid #dddddd;
+	padding: 8px;
+	text-align: left;
+}
+
+#response {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 2px;
+    display:none;
+}
+
+.success {
+    background: #c7efd9;
+    border: #bbe2cd 1px solid;
+}
+
+.error {
+    background: #fbcfcf;
+    border: #f3c6c7 1px solid;
+}
+
+div#response.display-block {
+    display: block;
+}
+</style>
 </head>
 
 <body>
@@ -42,7 +179,7 @@
         <!--  search form start -->
         <ul class="nav top-menu">
          
-            <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+              <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -54,7 +191,8 @@
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+    <!--header end-->
+<br><br>
     <!--sidebar start-->
    <aside>
       <div id="sidebar" class="nav-collapse ">
@@ -122,7 +260,7 @@
     <!--main content start-->
     <section id="main-content">
       <section class="wrapper"><br><br>
-	  <form enctype="multipart/form-data" method="post" action="<?php  echo $_SERVER['PHP_SELF'];  ?>">
+	  <form enctype="multipart/form-data" method="post" action="">
         <div class="row">
           <div class="col-lg-12">
           
@@ -134,9 +272,8 @@
           <div class="col-lg-12">
           
 			<section class="panel">
-              <header class="panel-heading">
-                Update Account
-              </header>
+            	 <div class="panel panel-info">
+                <div class="panel-heading">Update Account</div>
               <div class="panel-body">
              
                   <div class="form-group">
@@ -152,17 +289,17 @@
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label">New Password</label>
                     <div class="col-sm-10">
-                      <input type="password" name="curpass" class="form-control">
+                      <input type="password" name="npass" class="form-control">
                     </div>
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label">Verify New Password</label>
                     <div class="col-sm-10">
-                      <input type="password" name="userpass" class="form-control">
+                      <input type="password" name="vpass" class="form-control">
                     </div>
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label">Current Password</label>
                     <div class="col-sm-10">
-                      <input type="password" name="userpass" class="form-control">
+                      <input type="password" name="cpass" class="form-control">
                     </div>
 					<div><p style="color:white;">a</p></div>
 					<label class="col-sm-2 control-label" style="color:white;">Contact Number</label>
@@ -181,7 +318,7 @@
 
 
 </form>
-
+ <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
     
     </section>
     <!--main content end-->
@@ -276,35 +413,5 @@
     </script>
 
 </body>
-<?php
 
-if (isset($_POST['updatebtn']))
-{
-	include "dbase.php";
-			$idnumber = $_POST['userid'];
-			$user = $_POST['username'];
-			$curpass = $_POST['curpass'];
-			$pass = $_POST['userpass'];
-			$sql = "SELECT * FROM account where usrid = '$idnumber'";
-			$result = $con->query($sql);
-			
-			if ($result->num_rows > 0) 
-			{
-				if (($user <> "") and ($pass <> "")) $sql="update account set usr_name ='$user', usr_pass = '$pass' where usrid = '$idnumber'";
-				else if (($user <> '') and ($pass == '')) $sql="update account set usr_name ='$user' where usrid = '$idnumber'";
-				else if (($user == '') and ($pass <> '')) $sql="update account set usr_pass ='$pass' where usrid = '$idnumber'";
-				$con->query($sql);
-				echo "<script>alert('Changes has been made!')</script>";
-			}
-
-			else{
-				
-				echo "<script>alert('ID Number not found!')</script>";
-				
-				
-			}
-			
-			$con->close();
-}
-?>
 </html>

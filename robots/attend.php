@@ -1,4 +1,10 @@
-
+<?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
 <html lang="en">
 
 <head>
@@ -54,67 +60,41 @@ tt=display_c();
 
     <header class="header white-bg">
       <div class="toggle-nav">
-			<img src="../style/images/ccdilogo.png"  />
+			<img src="../style/images/ccdilogo.png" height="80" weight="80"  />
       </div>
-      <div class="nav search-row" id="top_menu">
-        <!--  search form start -->
-        <ul class="nav top-menu">
+     
+    
          
-            <h2 style="color:darkblue; font-size: 30px; font-family: verdana;"><b>COMPUTER COMMUNICATION<br> DEVELOPMENT INSTITUTE<br>SENIOR HIGH SCHOOL
-			</b><p style="font-size:20px;">Web Based Student Attendance Monitoring System<p></h2>
+            <h2 style="color:darkblue; font-size: 15px; font-family: verdana;"><b>COMPUTER COMMUNICATION<br>
+			DEVELOPMENT INSTITUTE<br>
+			SENIOR HIGH SCHOOL
+			</b>
+			<p style="font-size:13px;">RFID and SMS Based Student Attendance Monitoring System<p></h2>
          
-        </ul>
-        <!--  search form end -->
-      </div>
+  
+      
 
-      <div class="top-nav notification-row">
-        <!-- notificatoin dropdown start-->
-        
-      </div>
+   
     </header>
     <!--header end-->
 
-    <!--sidebar start-->
     
     <section id="main-content">
       <section class="wrapper">
         <!--overview start--><br>
-        <div class="" >
-          <div class=""><br><br><br><br>
-           
-			
-		   <section class="">
-              <header class=""><form>
+       <form>
 			  <h1 style="color:darkblue;">
-								&nbsp 
-								&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  
-							&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-				&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-				<b><span style="color:white; font-size:35px;" id='ct' ></span></b> </h1> 
-				 &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-				&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-				&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-								&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-							&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp &nbsp &nbsp  &nbsp &nbsp
-							&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-				 RFID NO: 
-				<input style="font-size:20px; width:300px;" id="scanInput" /></form>
-              </header>
-              <div class="panel-body" >
+					
+									<b><span style="color:red; font-size:20px; padding-left:33em" id='ct' ></span></b> </h1> 
+										<div id="resultsList"></div>
+				<h3 style="color:red; font-size:20px; padding-left:30em;">RFID NO: 
+				<input style="font-size:15px; width:200px; " id="scanInput" /></h3>
+					</form>
+
+             
             
-                
-					
-					<div id="resultsList"></div>
-						
-						
-					 
-					
-					
-					
+							
                    
-                    <div class="col-md-4">
-                    	<div class="row">
-                    		<div class ="col-md-12">
                       <!-- <input name="idnumber" type="text" class="form-control" onkeyup="showUser(this.value)" > -->
 				
 					
@@ -314,117 +294,20 @@ tt=display_c();
   
                  
             </section>
-			
-			
-		
-					
-		
-		</div>
-		</div>
-		
-</div>
-
-
-     	
+	
+		   	 </section>
     </section>
-    <!--main content end-->
-  </section>
-  <header class="panel-heading" style="background-color:red;">
-                <center>
-             <b>   <p style="font-size:25px; color:white;font-family:times new roman;"> We empower  the lives with touch!</p></b></center>
-				
-				
-              </header>
-  <!-- container section start -->
+ 
 </div>
-  <!-- javascripts -->
-  <script src="../assets/js/jquery.js"></script>
-  <script src="../assets/js/jquery-ui-1.10.4.min.js"></script>
-  <script src="../assets/js/jquery-1.8.3.min.js"></script>
-  <script type="text/javascript" src="../assets/js/jquery-ui-1.9.2.custom.min.js"></script>
-  <!-- bootstrap -->
-  <script src="../assets/js/bootstrap.min.js"></script>
-  <!-- nice scroll -->
-  <script src="../assets/js/jquery.scrollTo.min.js"></script>
-  <script src="../assets/js/jquery.nicescroll.js" type="text/javascript"></script>
-  <!-- charts scripts -->
-  <script src="../assets/assets/jquery-knob/js/jquery.knob.js"></script>
-  <script src="../assets/js/jquery.sparkline.js" type="text/javascript"></script>
-  <script src="../assets/assets/jquery-easy-pie-chart/jquery.easy-pie-chart.js"></script>
-  <script src="../assets/js/owl.carousel.js"></script>
-  <!-- jQuery full calendar -->
-  <<script src="../assets/js/fullcalendar.min.js"></script>
-    <!-- Full Google Calendar - Calendar -->
-    <script src="../assets/assets/fullcalendar/fullcalendar/fullcalendar.js"></script>
-    <!--script for this page only-->
-    <script src="../assets/js/calendar-custom.js"></script>
-    <script src="../assets/js/jquery.rateit.min.js"></script>
-    <!-- custom select -->
-    <script src="../assets/js/jquery.customSelect.min.js"></script>
-    <script src="../assets/assets/chart-master/Chart.js"></script>
 
-    <!--custome script for all page-->
-    <script src="../assets/js/scripts.js"></script>
-    <!-- custom script for this page-->
-    <script src="../assets/js/sparkline-chart.js"></script>
-    <script src="../assets/js/easy-pie-chart.js"></script>
-    <script src="../assets/js/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="../assets/js/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="../assets/js/xcharts.min.js"></script>
-    <script src="../assets/js/jquery.autosize.min.js"></script>
-    <script src="../assets/js/jquery.placeholder.min.js"></script>
-    <script src="../assets/js/gdp-data.js"></script>
-    <script src="../assets/js/morris.min.js"></script>
-    <script src="../assets/js/sparklines.js"></script>
-    <script src="../assets/js/charts.js"></script>
-    <script src="../assets/js/jquery.slimscroll.min.js"></script>
-    <script>
-    //knob
-      $(function() {
-        $(".knob").knob({
-          'draw': function() {
-            $(this.i).val(this.cv + '%')
-          }
-        })
-      });
+ <div style="background-color:red" >
 
-      //carousel
-      $(document).ready(function() {
-        $("#owl-slider").owlCarousel({
-          navigation: true,
-          slideSpeed: 300,
-          paginationSpeed: 400,
-          singleItem: true
-
-        });
-      });
-
-      //custom select box
-
-      $(function() {
-        $('select.styled').customSelect();
-      });
-
-      /* ---------- Map ---------- */
-      $(function() {
-        $('#map').vectorMap({
-          map: 'world_mill_en',
-          series: {
-            regions: [{
-              values: gdpData,
-              scale: ['#000', '#000'],
-              normalizeFunction: 'polynomial'
-            }]
-          },
-          backgroundColor: '#eef3f7',
-          onLabelShow: function(e, el, code) {
-            el.html(el.html() + ' (GDP - ' + gdpData[code] + ')');
-          }
-        });
-      });
-    </script>
-
-
+                <center>
+             <b>   <p style="font-size:23px; color:white;font-family:times new roman;"> We empower  the lives with touch!</p></b></center>
+			
+				
+              
+  </div>
 </body>
 
 </html>

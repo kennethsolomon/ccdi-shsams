@@ -1,65 +1,36 @@
 <?php
-if (!isset($_SERVER['HTTP_REFERER']))
+if (isset($_POST['sase']))
 {
-	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
-	die(header('location:error.php'));
-}
-?>
-
-
-<?php
-if (isset($_POST['print']))
-{
+	include 'dbase.php';
 	
-	
-	require('generate_pdf.php');
-}
-if (isset($_POST['bnsearch']))
-{
-	$sname = $_POST['valtolook'];
-	$sdate = $_POST['valtolook2'];
-	if ($sname !== "" and $sdate === "")
-	{
-				
-				$qry = "Select * from grd_attendance where concat(card_number,last_name,first_name) like '%".$sname."%'";
-				$search_result = filterTbl($qry);
-	}
-	else if ($sname === '' and $sdate !== '')
-	{
-		
-		$qry = "Select * from grd_attendance where datein like '%".$sdate."%'";
-		$search_result = filterTbl($qry);
-	}
-	else if ($sname !== '' and $sdate !== '')
-	{
-	
-	$qry = "Select * from grd_attendance where (concat(card_number,last_name,first_name) like '%".$sname."%') and datein like '%".$sdate."%'";
-	$search_result = filterTbl($qry);
-	}
-	
-}
-else{
-	$qry = "Select * from grd_attendance limit 10";
-	$search_result = filterTbl($qry);
-}
-function filterTbl($qry)
-{
-	$con = mysqli_connect("localhost", "root", "", "amsdb");
-	$fltr_res = mysqli_query($con, $qry);
-	return $fltr_res;
+      $today = date('F j, Y');
+	  $title = $_POST['title'];
+	  $andate = $_POST['andate']; 
+	  $party = $_POST['party'];
+	 $sql = "insert into announcement values(0,'$title','$andate','$party','$today','on')";
+				if($con->query($sql)){
+						header("Location:announce.php?statu=Record save successfully!&err=success");
+					
+				}
+				else
+				{
+						header("Location:announce.php?statu=Unable to save record!&err=error");
+					
+				}	
+	//include "broadcast.php";
 }
 ?>
 <html lang="en">
 
 <head>
-   <meta charset="utf-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Creative - Bootstrap 3 Responsive Admin Template">
   <meta name="author" content="GeeksLabs">
   <meta name="keyword" content="Creative, Dashboard, Admin, Template, Theme, Bootstrap, Responsive, Retina, Minimal">
   <link rel="shortcut icon" href="img/favicon.png">
 
-  <title>Attendance</title>
+  <title>Announcement</title>
 
   <link href="../style/css/bootstrap.min.css" rel="stylesheet">
   <link href="../style/css/bootstrap-theme.css" rel="stylesheet">
@@ -77,20 +48,43 @@ function filterTbl($qry)
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
- <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
-     <!-- Custom styles -->
-  <link href="css/style.css" rel="stylesheet">
-  <link href="css/style-responsive.css" rel="stylesheet" />
+  <script src="../style/js/jquery.js"></script> 
+  <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="../style/css/style.css" rel="stylesheet">
+  <link href="../style/css/style-responsive.css" rel="stylesheet" />
+    <script src="../style/js/jquery.js"></script>
+  
+  <style>
+{
+  box-sizing: border-box;
+}
 
-  <script src="../style/js/jquery.js"></script>
-	
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 500px;
+}
+
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
 </head>
 
 <body>
+<?php
+ob_start();
+?>
   <!-- container section start -->
   <section id="container" class="">
 
-<div id = 'prnt2'>
+
     <header class="header dark-bg">
       <div class="toggle-nav">
 			<img src="../style/images/ccdilogo.png" />
@@ -99,8 +93,7 @@ function filterTbl($qry)
         <!--  search form start -->
         <ul class="nav top-menu">
          
-             <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
-         
+           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>   
         </ul>
         <!--  search form end -->
       </div>
@@ -110,12 +103,12 @@ function filterTbl($qry)
         
       </div>
     </header>
-    <!--header end--><br><br>
-</div>
+    <!--header end-->
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
-        <!-- sidebar menu start--><br><BR>
+       <!-- sidebar menu start--><br><BR>
         <ul class="sidebar-menu">
           <li >
             <a class="" href="admin.php">
@@ -123,7 +116,7 @@ function filterTbl($qry)
                           <span>Home</span>
                       </a>
           </li>
-          <li>
+          <li >
             <a class="" href="request.php">
                           <i class=""></i>
                           <span>Student</span>
@@ -131,7 +124,7 @@ function filterTbl($qry)
                       </a>
 
           </li>
-		   <li>
+		  <li>
             <a class="" href="personnel.php">
                           <i class=""></i>
                           <span>Personnel</span>
@@ -139,8 +132,8 @@ function filterTbl($qry)
                       </a>
 
           </li>
-		
-          <li class="active">
+		  
+          <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
                           <span>Monitor</span>
@@ -148,7 +141,7 @@ function filterTbl($qry)
                       </a>
 
           </li>
-         <li>
+         <li class="active">
             <a class="" href="announce.php">
                           <i class=""></i>
                           <span>Announcement</span>
@@ -175,127 +168,56 @@ function filterTbl($qry)
         </ul>
       </div>
     </aside>
-	<br><BR>
-    <!--main content start-->
 
+    <!--main content start-->
     <section id="main-content">
       <section class="wrapper">
-        <!--overview start-->
+        <!--overview start--><br><BR>
         <div class="row">
-           <div class="col-lg-12">
-		  <form method="post" action="">
-            <section class="panel">
+          <div class="col-lg-12">
+		     
+             <section class="panel">
               <div class="panel panel-info">
-                <div class="panel-heading">Attendance Summary</div>
-              <div class="panel-body">
-             
-                <div class="nav search-row" id="top_menu">
-											<!--  search form start -->
-												<br>
-											<ul class="nav top-menu">
-											  <li>
-												<form class="navbar-form" action="" method="post">
-												  <input style="font-size:16px;" placeholder="By Name" type="text" name="valtolook">
-												  <input style="font-size:16px;" placeholder="By Date" type="text" name="valtolook2">
-				
-											  </li>
-											  <li> <button class="btn btn-default" type="submit" name="bnsearch" >
-											  <span class="icon_search"></span>
-											  </button>
-											     </li>
-												
-											  </ul>
-											  							  </form><br>
-					</div>
-												  
-						 <table class="table" style="font-size:80%">
-              
-					  <tr>
-						<th>Fullname</th>
-						<th>Date</th>
-						<th>TimeIn</th>
-						<th>TimeOut</th>
-					  </tr>
-				   <?php
-													while ($row = mysqli_fetch_array($search_result))
-													{
-																	$lname = $row['last_name'];
-										$fname = $row['first_name'];
-										$mname = $row['middle_name'];
-										$datein = $row['datein'];
-										$timein= $row['timein'];
-										$timeout= $row['timeout'];
-										$fullname = $lname.', '.$fname.' '.$mname;
-										
-										echo "<tr>";
-										echo "<td>".$fullname."</td>";
-											echo "<td>".$datein."</td>";
-											echo "<td>".$timein."</td>";
-											echo "<td>".$timeout."</td>";
-													}
-												  ?>
-              
-				
-           </tbody>
-											  </table>
+                <div class="panel-heading">Broadcast Announcement</div>
+   
 					
-                    </div>
-				  
+				
+				<div class="panel-body">
+					<form action="" method="post" enctype="multipart/form-data" >
+						<div class="row">
+						<br><br><br><br>
+						  <div class="column">
+								Announcement Details <br><br>
+								Title
+								<input type="text" name="title" class="form-control" >
+								
+								Date:
+								 <script src="bootstrap-datepicker.js"></script>                        
+								<input id="dp1" name="andate" type="text" value="<?php  echo date('m/d/Y') ; ?>" size="16" class="form-control">
+								
+												
+						  </div>
+						  <div class="column">
+								 Involve Party<br>
+								<br> 
+								Party
+								<select  name='party' class='form-control'>
+									<option value="SHS">SHS</option>
+									<option value="11">Grade 11</option>
+									<option value="12">Grade 12</option>
+								</select>
+									<br>
+								<button name="sase" type="submit" class="btn btn-success  btn-sm">Send & Save</button>						
+						  </div>
+							</div>	
+				
+					</form>		
+               
+				</div>
+            </section>
+		</div>
+		</div>
 
-                    
-					
-					<div><p style="color:white;">a</p></div>
-					<div><p style="color:white;">a</p></div>
-					
-					
-			
-<div id ='prnt'>					
-				
-					
-					
-                  </div>
-                  
-				  
-				  
-				  
-				  
-				  
-				  
-              
-              </div>
-            </section>
-			<section class="panel">
-         		<form class="navbar-form" action="" method="post">
-						<ul>
-											
-											  <li>
-											   <script src="../style/js/jquery-3.3.1.min.js"></script>
-												
-										   <script src="bootstrap-datepicker.js"></script>                        
-											<input id="dp1" name="fdate" type="text"  size="16"  placeholder="date from">
-											<input id="dp2" name="udate" type="text"  size="16"  placeholder="date until">
-											<select name ="track">
-														<option value="ABM">ABM</option>
-														<option value = "GAS">GAS</option>
-														<option value="STEM">STEM</option>
-														<option value="TVL-Animation">TVL-Animation</option>
-														<option value = "TVL-ICT">TVL-ICT</option>
-											</select>
-											<select name ="yearlevel">
-														<option value="11">11</option>
-														<option value = "12">12</option>
-											</select>
-											<input  name="section" type="text"  size="16"  placeholder="section">
-											 
-											  <button class="btn btn-default" type="submit" name="print" >
-											  <span class="icon_printer"></span>
-											  </button>
-											  </li>
-											  </ul>
-              </form>
-            </section>
-		</div>
-		</div>
 
 
     
@@ -303,8 +225,8 @@ function filterTbl($qry)
     <!--main content end-->
   </section>
   <!-- container section start -->
-</div>
-<!-- javascripts -->
+
+  <!-- javascripts -->
   <script src="../assets/js/jquery.js"></script>
   <script src="../assets/js/jquery-ui-1.10.4.min.js"></script>
   <script src="../assets/js/jquery-1.8.3.min.js"></script>
@@ -389,12 +311,10 @@ function filterTbl($qry)
           }
         });
       });
-	   $('#dp1').datepicker();
-	    $('#dp2').datepicker();
+	     $('#dp1').datepicker();
     </script>
 
-	
-	
 </body>
 
 </html>
+

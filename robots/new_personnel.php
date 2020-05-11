@@ -1,42 +1,17 @@
 <?php
+if (!isset($_SERVER['HTTP_REFERER']))
+{
+	header ('HTTP/1.0 403 Forbidden'. TRUE, 403);
+	die(header('location:error.php'));
+}
+?>
+
+
+
+<?php
 if (isset($_POST['save_p']))
 {
-	include 'dbase.php';
-
-	$cnt = "Select * from per_files";
-	$qry = $con->query($cnt);
-	$cntsc = 0;
-	while ($row = $qry->fetch_assoc())
-	{
-		$cntsc = $cntsc + 1;
-	}
-	$sc= date("y");
-	$sc_id = $sc."-".$cntsc;
-	$lname = $_POST['lname'];
-	$fname = $_POST['fname'];
-	$mname = $_POST['mname'];
-	$add = $_POST['add'];
-	$gender = $_POST['gender'];
-	$bday = $_POST['bday'];
-	$role = $_POST['role'];
-	$connum = $_POST['connum'];
-	
-	
-	
-	
-		$sql = "insert into per_files values('$sc_id','none','$lname','$fname','$mname','$add','$gender','$bday','none',0,'none','none','$connum','$role','')";
-		if($con->query($sql)){
-			 $type = "success";
-             $message = "New personnel is save successfully!";
-			$sql = "insert into account values(0,'$sc_id','$lname','$lname','$role','none','activated')";
-			$con->query($sql);
-		}
-		else
-		{
-			 $type = "error";
-             $message = "Problem found in saving the record! ".$sc_id.$lname.$fname.$mname.$add.$gender.$bday.$role;
-			
-		}
+		require 'add_fc.php';	
 }
 ?>
 <html lang="en">
@@ -67,6 +42,21 @@ if (isset($_POST['save_p']))
   <link href="../style/css/style-responsive.css" rel="stylesheet" />
   <link href="../style/css/xcharts.min.css" rel=" stylesheet">
   <link href="../style/css/jquery-ui-1.10.4.min.css" rel="stylesheet">
+   <link href="../style/css/bootstrap-datepicker.css" rel="stylesheet" />
+       <!-- Custom styles -->
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/style-responsive.css" rel="stylesheet" />
+  <script src="../style/js/jquery.js"></script>
+  <script>
+  function isNumberKey(evt)
+      {
+         var charCode = (evt.which) ? evt.which : event.keyCode
+         if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+ 
+         return true;
+      }
+  </script>
   <style>    
 
 
@@ -144,7 +134,7 @@ div#response.display-block {
         <!--  search form start -->
         <ul class="nav top-menu">
          
-           <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>Attendance Monitoring System with <br>Radio Frequency Identification Card</h1>
+            <h1>COMPUTER COMMUNICATION DEVELOPMENT INSTITUTE<br>RFID and SMS Based Attendance Monitoring System       </h1>           
          
         </ul>
         <!--  search form end -->
@@ -156,19 +146,19 @@ div#response.display-block {
       </div>
     </header>
     <!--header end-->
-<br><br><br>
+<br><br>
     <!--sidebar start-->
     <aside>
       <div id="sidebar" class="nav-collapse ">
        <!-- sidebar menu start--><br><BR>
         <ul class="sidebar-menu">
-          <li >
+           <li >
             <a class="" href="admin.php">
                           <i class="icon_house_alt"></i>
                           <span>Home</span>
                       </a>
           </li>
-          <li >
+          <li class="">
             <a class="" href="request.php">
                           <i class=""></i>
                           <span>Student</span>
@@ -176,7 +166,7 @@ div#response.display-block {
                       </a>
 
           </li>
-		   <li  class="active">
+		  <li class="active">
             <a class="" href="personnel.php">
                           <i class=""></i>
                           <span>Personnel</span>
@@ -184,7 +174,7 @@ div#response.display-block {
                       </a>
 
           </li>
-		  
+		
           <li>
             <a class="" href="attendance.php">
                           <i class=""></i>
@@ -193,10 +183,18 @@ div#response.display-block {
                       </a>
 
           </li>
+         <li>
+            <a class="" href="announce.php">
+                          <i class=""></i>
+                          <span>Announcement</span>
+
+                      </a>
+
+          </li>
           <li>
             <a class="" href="account.php">
                           <i class=""></i>
-                          <span>My Account</span>
+                          <span>Account</span>
 
                       </a>
 
@@ -213,24 +211,22 @@ div#response.display-block {
       </div>
     </aside>
 
-    <!--main content start-->
+
+ <!--main content start-->
     <section id="main-content">
       <section class="wrapper">
         <!--overview start--><br><BR>
         <div class="row">
           <div class="col-lg-12">
-		  <form method="post" action="">
+		     
              <section class="panel">
-              <header class="panel-heading">
-                <center>
-                <p><h3>CREATE PERSONNEL DETAILS</h3></p></center>
-				
-				
-              </header>
+              			 <div class="panel panel-info">
+                <div class="panel-heading">Student Details</div>
+               
 					
 				
 				<div class="panel-body">
-					<form enctype="multipart/form-data" method="post">
+					<form action="" method="post" enctype="multipart/form-data" >
 						<input type="text" name="lname" class="form-control" placeholder="Lastname">
 						<br>			 
 						<input type="text" name="fname" class="form-control" placeholder="Firstname">
@@ -239,7 +235,8 @@ div#response.display-block {
 						<br>									   							
 						<input type="text" name="add" class="form-control" placeholder="Address"> 
 						<br>
-						<input type="text" name="bday" class="form-control" placeholder="Birthday"> 
+						<script src="bootstrap-datepicker.js"></script>                        
+						<input id="dp1" name="bday" type="text" value="28-10-2013" size="16" class="form-control">
 						<br>
 						<select id='gender' name='gender' class='form-control' >
 							<option value="Female">Female</option>
@@ -248,30 +245,32 @@ div#response.display-block {
 					
 						
 						<br>
-						<input type="text" name="connum" class="form-control" placeholder="Contact Number"> 
+						<input type="text" name="connum" onkeypress="return isNumberKey(event)" class="form-control" placeholder="Contact Number"> 
 						<br>
 						<select id='role' name='role' class='form-control'>
 							<option value="Security Guard">Security Guard</option>
 							<option value="Administrator">Administrator</option>
 					  </select> <br>
 						<button name="save_p" type="submit" class="btn btn-success  btn-sm">Save</button>	 
-						 <div id="response" class="<?php if(!empty($type)) { echo $type . " display-block"; } ?>"><?php if(!empty($message)) { echo $message; } ?></div>
+				
     
 						</form>		
 				
+			</div>	
+					</form>		
+               
 				</div>
             </section>
 		</div>
 		</div>
 
 
-	</form>
+
     
     </section>
     <!--main content end-->
   </section>
   <!-- container section start -->
-
   <!-- javascripts -->
   <script src="../assets/js/jquery.js"></script>
   <script src="../assets/js/jquery-ui-1.10.4.min.js"></script>
@@ -357,6 +356,8 @@ div#response.display-block {
           }
         });
       });
+	  
+	  	  $('#dp1').datepicker();
     </script>
 
 </body>
